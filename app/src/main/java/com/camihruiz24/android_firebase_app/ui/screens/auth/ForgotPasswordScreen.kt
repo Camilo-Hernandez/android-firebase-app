@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.camihruiz24.android_firebase_app.utils.AnalyticsManager
-import com.camihruiz24.android_firebase_app.utils.AuthResult
+import com.camihruiz24.android_firebase_app.utils.AuthorizationResult
 import com.camihruiz24.android_firebase_app.utils.AuthenticationManager
 import kotlinx.coroutines.launch
 
@@ -82,12 +82,12 @@ fun ForgotPasswordScreen(analytics: AnalyticsManager, authManager: Authenticatio
 
 suspend fun resetPassword(email: String, authManager: AuthenticationManager, analytics: AnalyticsManager,  context: Context, navigation: NavController) {
     when(val result = authManager.resetPassword(email)) {
-        is AuthResult.Success -> {
+        is AuthorizationResult.Success -> {
             analytics.logButtonClicked("Click: envío de reinicio de contraseña para $email")
             Toast.makeText(context, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show()
             navigation.popBackStack()
         }
-        is AuthResult.Error -> {
+        is AuthorizationResult.Error -> {
             analytics.logError(result.errorMessage)
             Toast.makeText(context, "Error al enviar reinicio de contraseña", Toast.LENGTH_SHORT).show()
         }

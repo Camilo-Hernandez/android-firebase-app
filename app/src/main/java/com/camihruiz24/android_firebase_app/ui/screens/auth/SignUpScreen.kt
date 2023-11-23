@@ -38,7 +38,7 @@ import androidx.navigation.NavController
 import com.camihruiz24.android_firebase_app.ui.navigation.Routes
 import com.camihruiz24.android_firebase_app.ui.theme.Purple40
 import com.camihruiz24.android_firebase_app.utils.AnalyticsManager
-import com.camihruiz24.android_firebase_app.utils.AuthResult
+import com.camihruiz24.android_firebase_app.utils.AuthorizationResult
 import com.camihruiz24.android_firebase_app.utils.AuthenticationManager
 import kotlinx.coroutines.launch
 
@@ -120,7 +120,7 @@ suspend fun signUp(
 ) {
     if (email.trim().isNotBlank() && password.isNotEmpty()) {
         when (val result = authManager.createUserWithEmailAndPassword(email, password)) {
-            is AuthResult.Success -> {
+            is AuthorizationResult.Success -> {
                 analytics.logButtonClicked("Botón de Registro realizado")
                 Toast.makeText(
                     context,
@@ -130,7 +130,7 @@ suspend fun signUp(
                 navigation.popBackStack()
             }
 
-            is AuthResult.Error -> {
+            is AuthorizationResult.Error -> {
                 analytics.logButtonClicked("Error SignUp: ${result.errorMessage}")
                 analytics.logError(result.errorMessage)
                 Toast.makeText(

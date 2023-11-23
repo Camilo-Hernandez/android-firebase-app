@@ -1,5 +1,6 @@
 package com.camihruiz24.android_firebase_app.ui.screens.home
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,6 +36,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -47,6 +50,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.camihruiz24.android_firebase_app.R
 import com.camihruiz24.android_firebase_app.ui.navigation.Routes
 import com.camihruiz24.android_firebase_app.ui.screens.login.ContactsScreen
@@ -81,8 +86,17 @@ fun HomeScreen(analytics: AnalyticsManager, navigation: NavController, authManag
                         horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        user?.photoUrl?.let {
-
+                        user?.photoUrl?.let { it: Uri ->
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(it)
+                                    .crossfade(true)
+                                    .build(),
+                                contentDescription = "Imagen de perfil",
+                                placeholder = painterResource(id = R.drawable.profile),
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.clip(CircleShape).size(40.dp)
+                            )
                         } ?: Image(
                             painterResource(id = R.drawable.profile),
                             "userPhoto",

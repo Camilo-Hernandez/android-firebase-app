@@ -2,6 +2,9 @@ package io.devexpert.android_firebase.ui.screens.auth
 
 import android.content.Context
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -49,8 +52,12 @@ import com.camihruiz24.android_firebase_app.R
 import com.camihruiz24.android_firebase_app.ui.navigation.Routes
 import com.camihruiz24.android_firebase_app.ui.theme.Purple40
 import com.camihruiz24.android_firebase_app.utils.AnalyticsManager
-import com.camihruiz24.android_firebase_app.utils.AuthResult
 import com.camihruiz24.android_firebase_app.utils.AuthenticationManager
+import com.camihruiz24.android_firebase_app.utils.AuthorizationResult
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -61,14 +68,14 @@ private suspend fun incognitoSignIn(
     navigation: NavController
 ) {
     when (val result = authManager.signInAnonymously()) {
-        is AuthResult.Success -> {
+        is AuthorizationResult.Success -> {
             analytics.logButtonClicked("Click: Continuar como invitado")
             navigation.navigate(Routes.Home.name) {
                 popUpTo(Routes.Login.name) { inclusive = true }
             }
         }
 
-        is AuthResult.Error -> {
+        is AuthorizationResult.Error -> {
             analytics.logError("Error SignIn Incognito: ${result.errorMessage}")
             Toast.makeText(context, "Error accediendo como invitado", Toast.LENGTH_SHORT).show()
         }
@@ -89,6 +96,35 @@ fun LoginScreen(
 
     val scope: CoroutineScope = rememberCoroutineScope()
     val context: Context = LocalContext.current
+
+    /** Configuración del launcher para el inicio de sesión con Google */
+    val googleSignInLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result: ActivityResult ->
+        when (val account = authManager.handleSignInResult(GoogleSignIn.getSignedInAccountFromIntent(result.data))) {
+            is AuthorizationResult.Success -> {
+                val credential: AuthCredential = GoogleAuthProvider.getCredential(account.data.idToken, null)
+                scope.launch {
+                    authManager.signInWithGoogleCredential(credential)?.let { _: AuthorizationResult<FirebaseUser> ->
+                        with(context.getString(R.string.click_success_login)) {
+                            analytics.logButtonClicked(this)
+                            Toast.makeText(context, this, Toast.LENGTH_SHORT).show()
+                        }
+                        navigation.navigate(Routes.Home.name) {
+                            popUpTo(Routes.Login.name) { inclusive = true }
+                        }
+                    }
+                }
+            }
+
+            is AuthorizationResult.Error -> {
+                analytics.logError("Error SignIn: ${account.errorMessage}")
+                Toast.makeText(context, "Error: ${account.errorMessage}", Toast.LENGTH_SHORT).show()
+            }
+
+            null -> Toast.makeText(context, "Error: cuenta nula", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         ClickableText(
@@ -184,7 +220,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(15.dp))
         SocialMediaButton(
             onClick = {
-
+                authManager.signInWithGoogle(googleSignInLauncher)
             },
             text = "Continuar con Google",
             icon = R.drawable.ic_google,
@@ -203,14 +239,14 @@ private suspend fun signInWithEmailAndPassword(
 ) {
     if (email.trim().isNotBlank() && password.isNotEmpty()) {
         when (val result = authManager.signInWithEmailAndPassword(email, password)) {
-            is AuthResult.Success -> {
+            is AuthorizationResult.Success -> {
                 analytics.logButtonClicked("Click: Inicio de sesión exitoso")
                 navigation.navigate(Routes.Home.name) {
                     popUpTo(Routes.Login.name) { inclusive = true }
                 }
             }
 
-            is AuthResult.Error -> {
+            is AuthorizationResult.Error -> {
                 analytics.logButtonClicked("Error SignUp: ${result.errorMessage}")
                 Toast.makeText(
                     context,
