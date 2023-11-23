@@ -1,4 +1,4 @@
-package com.camihruiz24.android_firebase_app.ui.screens.login
+package com.camihruiz24.android_firebase_app.ui.screens.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

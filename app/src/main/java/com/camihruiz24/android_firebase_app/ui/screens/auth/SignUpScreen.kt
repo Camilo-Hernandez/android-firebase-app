@@ -15,6 +15,7 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -36,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.camihruiz24.android_firebase_app.ui.navigation.Routes
-import com.camihruiz24.android_firebase_app.ui.theme.Purple40
 import com.camihruiz24.android_firebase_app.utils.AnalyticsManager
 import com.camihruiz24.android_firebase_app.utils.AuthorizationResult
 import com.camihruiz24.android_firebase_app.utils.AuthenticationManager
@@ -60,7 +60,7 @@ fun SignUpScreen(analytics: AnalyticsManager, authManager: AuthenticationManager
     ) {
         Text(
             text = "Crear Cuenta",
-            style = TextStyle(fontSize = 40.sp, color = Purple40)
+            style = TextStyle(fontSize = 40.sp, color = MaterialTheme.colorScheme.primary)
         )
         Spacer(modifier = Modifier.height(50.dp))
         TextField(
@@ -104,7 +104,7 @@ fun SignUpScreen(analytics: AnalyticsManager, authManager: AuthenticationManager
                 fontSize = 14.sp,
                 fontFamily = FontFamily.Default,
                 textDecoration = TextDecoration.Underline,
-                color = Purple40
+                color = MaterialTheme.colorScheme.primary
             )
         )
     }

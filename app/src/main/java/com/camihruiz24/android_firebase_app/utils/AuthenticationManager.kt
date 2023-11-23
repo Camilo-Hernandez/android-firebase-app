@@ -98,7 +98,7 @@ class AuthenticationManager(private val context: Context) {
 
     private val googleSignInClient: GoogleSignInClient by lazy {
         GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(context.getString(R.string.default_web_client_id))
+            .requestIdToken(context.getString(R.string.default_web_client_id)) // This is not an error if the build directory contains this resource
             .requestEmail()
             .build()
             .let { GoogleSignIn.getClient(context, it) }

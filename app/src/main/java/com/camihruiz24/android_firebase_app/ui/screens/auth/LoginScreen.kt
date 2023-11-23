@@ -25,6 +25,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -50,7 +51,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.camihruiz24.android_firebase_app.R
 import com.camihruiz24.android_firebase_app.ui.navigation.Routes
-import com.camihruiz24.android_firebase_app.ui.theme.Purple40
 import com.camihruiz24.android_firebase_app.utils.AnalyticsManager
 import com.camihruiz24.android_firebase_app.utils.AuthenticationManager
 import com.camihruiz24.android_firebase_app.utils.AuthorizationResult
@@ -140,7 +140,7 @@ fun LoginScreen(
                 fontSize = 14.sp,
                 fontFamily = FontFamily.Default,
                 textDecoration = TextDecoration.Underline,
-                color = Purple40
+                color = MaterialTheme.colorScheme.primary
             )
         )
     }
@@ -201,7 +201,7 @@ fun LoginScreen(
                 fontSize = 14.sp,
                 fontFamily = FontFamily.Default,
                 textDecoration = TextDecoration.Underline,
-                color = Purple40
+                color = MaterialTheme.colorScheme.primary
             )
         )
         Spacer(modifier = Modifier.height(25.dp))

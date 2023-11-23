@@ -3,7 +3,6 @@ package com.camihruiz24.android_firebase_app.ui.screens.auth
 import android.content.Context
 import android.widget.Toast
 import com.camihruiz24.android_firebase_app.ui.navigation.Routes
-import com.camihruiz24.android_firebase_app.ui.theme.Purple40
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -54,7 +54,7 @@ fun ForgotPasswordScreen(analytics: AnalyticsManager, authManager: Authenticatio
     ) {
         Text(
             text = "Olvidó su contraseña",
-            style = TextStyle(fontSize = 40.sp, color = Purple40)
+            style = TextStyle(fontSize = 40.sp, color = MaterialTheme.colorScheme.primary)
         )
         Spacer(modifier = Modifier.height(50.dp))
         TextField(

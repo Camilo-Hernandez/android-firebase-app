@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.camihruiz24.android_firebase_app.ui.navigation.Navigation
-import com.camihruiz24.android_firebase_app.ui.theme.AndroidfirebaseappTheme
+import com.camihruiz24.android_firebase_app.ui.theme.AndroidFirebaseAppTheme
 
 class MainActivity : ComponentActivity() {
 
@@ -12,7 +12,7 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         setContent {
-            AndroidfirebaseappTheme {
+            AndroidFirebaseAppTheme {
                     Navigation(this)
             }
         }
