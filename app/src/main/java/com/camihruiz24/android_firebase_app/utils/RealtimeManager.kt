@@ -15,14 +15,14 @@ class RealtimeManager(context: Context) {
 
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
 
-    /** Necesitamos la referencia a la DB que usaremos. En este caso, contacts, el hijo de la DB.
+    /** Referencia al hijo de la DB ("tabla"). En este caso, contacts, el hijo de la DB global.
      * La DB de Firebase, siendo NoSQL, es anidada */
     private val contactsReference: DatabaseReference = database.reference.child("contacts")
 
     private val authManager: AuthenticationManager = AuthenticationManager(context)
 
     fun getAllContacts(): Flow<List<Contact>> {
-        val currentUserId = authManager.getCurrentUser()?.uid
+        val currentUserId: String? = authManager.getCurrentUser()?.uid
         return callbackFlow<List<Contact>> {
             val listener = contactsReference.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {

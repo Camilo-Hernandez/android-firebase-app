@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">android-firebase-app</string>
+    <string name="app_name">Contacts App</string>
     <string name="login_error">Error al iniciar sesión</string>
     <string name="password_recovery_error">Error al restablecer la contraseña</string>
     <string name="signin_with_google_failed">SignIn with Google failed</string>

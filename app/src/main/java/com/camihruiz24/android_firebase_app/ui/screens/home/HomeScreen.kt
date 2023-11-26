@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,9 +55,11 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.camihruiz24.android_firebase_app.R
+import com.camihruiz24.android_firebase_app.model.Note
 import com.camihruiz24.android_firebase_app.ui.navigation.Routes
 import com.camihruiz24.android_firebase_app.utils.AnalyticsManager
 import com.camihruiz24.android_firebase_app.utils.AuthenticationManager
+import com.camihruiz24.android_firebase_app.utils.FirestoreManager
 import com.camihruiz24.android_firebase_app.utils.RealtimeManager
 import com.google.firebase.auth.FirebaseUser
 
@@ -97,7 +100,9 @@ fun HomeScreen(analytics: AnalyticsManager, navigation: NavController, authManag
                                 contentDescription = "Imagen de perfil",
                                 placeholder = painterResource(id = R.drawable.profile),
                                 contentScale = ContentScale.Crop,
-                                modifier = Modifier.clip(CircleShape).size(40.dp)
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .size(40.dp)
                             )
                         } ?: Image(
                             painterResource(id = R.drawable.profile),
@@ -146,7 +151,12 @@ fun HomeScreen(analytics: AnalyticsManager, navigation: NavController, authManag
                     showDialog = false
                 }, onDismiss = { showDialog = false })
             }
-            BottomNavGraph(navController = navController, context = context, authManager)
+
+            NavGraph(
+                navController = navController,
+                context = context,
+                authManager = authManager,
+            )
         }
     }
 }
@@ -213,14 +223,23 @@ fun RowScope.AddItem(screens: BottomNavScreen, currentDestination: NavDestinatio
 }
 
 @Composable
-fun BottomNavGraph(navController: NavHostController, context: Context, authManager: AuthenticationManager) {
+fun NavGraph(navController: NavHostController, context: Context, authManager: AuthenticationManager) {
     val realtimeManager = RealtimeManager(context)
+    val firestoreManager = FirestoreManager(context)
+
+    val notes: List<Note> by firestoreManager.getAllNotes().collectAsState(emptyList())
+
     NavHost(navController = navController, startDestination = BottomNavScreen.Contact.route) {
         composable(route = BottomNavScreen.Contact.route) {
             ContactsScreen(realtimeManager, authManager)
         }
         composable(route = BottomNavScreen.Note.route) {
-            NotesScreen()
+            NotesScreen(
+                notes,
+                firestoreManager::addNote,
+                firestoreManager::updateNote,
+                firestoreManager::deleteNote,
+            )
         }
     }
 }

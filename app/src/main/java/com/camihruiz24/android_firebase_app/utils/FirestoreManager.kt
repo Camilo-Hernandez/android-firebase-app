@@ -1,7 +1,9 @@
 package com.camihruiz24.android_firebase_app.utils
 
 import android.content.Context
+import android.util.Log
 import com.camihruiz24.android_firebase_app.model.Note
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -22,7 +24,9 @@ class FirestoreManager(context: Context) {
         .whereEqualTo("userId", userId).orderBy("title")
 
     // Forma 1
-    fun getAllNotes(): Flow<List<Note>> = userNotesQuery.snapshots().map { it.toObjects(Note::class.java) }
+    fun getAllNotes(): Flow<List<Note>> = userNotesQuery.snapshots()
+        .map { it.toObjects(Note::class.java) }
+
 
     // Forma 2
     /*
@@ -53,15 +57,23 @@ class FirestoreManager(context: Context) {
     */
 
     suspend fun addNote(note: Note) {
-        note.userId = userId.toString()
-        firestore.collection(NOTES).add(note).await()
+        with<CollectionReference, Unit>(firestore.collection(NOTES)) {
+            val noteId: String = add(note)
+                .run {
+                    await()
+                    result.id
+                }
+
+            document(noteId)
+                .set(note.copy(id = noteId, userId = userId.toString()))
+                .await()
+        }
     }
 
     suspend fun updateNote(note: Note) {
-        val noteRef: DocumentReference? = note.id?.let { it: String ->
-            firestore.collection(NOTES).document(it)
-        }
-        noteRef?.set(note)?.await()
+        Log.d("Nota actual", note.toString())
+        val noteRef: DocumentReference = firestore.collection(NOTES).document(note.id)
+        noteRef.set(note).await()
     }
 
     suspend fun deleteNote(noteId: String) {
