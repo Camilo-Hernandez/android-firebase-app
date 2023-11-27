@@ -1,4 +1,4 @@
-package com.camihruiz24.android_firebase_app.utils
+package com.camihruiz24.android_firebase_app.data
 
 import android.content.Context
 import android.os.Bundle

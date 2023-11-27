@@ -1,6 +1,7 @@
-package com.camihruiz24.android_firebase_app.utils
+package com.camihruiz24.android_firebase_app.data.contacts
 
 import android.content.Context
+import com.camihruiz24.android_firebase_app.data.AuthenticationManager
 import com.camihruiz24.android_firebase_app.model.Contact
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError

@@ -29,7 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,17 +54,19 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.camihruiz24.android_firebase_app.R
-import com.camihruiz24.android_firebase_app.model.Note
 import com.camihruiz24.android_firebase_app.ui.navigation.Routes
-import com.camihruiz24.android_firebase_app.utils.AnalyticsManager
-import com.camihruiz24.android_firebase_app.utils.AuthenticationManager
-import com.camihruiz24.android_firebase_app.utils.FirestoreManager
-import com.camihruiz24.android_firebase_app.utils.RealtimeManager
+import com.camihruiz24.android_firebase_app.data.AnalyticsManager
+import com.camihruiz24.android_firebase_app.data.AuthenticationManager
+import com.camihruiz24.android_firebase_app.data.contacts.RealtimeManager
 import com.google.firebase.auth.FirebaseUser
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(analytics: AnalyticsManager, navigation: NavController, authManager: AuthenticationManager) {
+fun HomeScreen(
+    analytics: AnalyticsManager,
+    navigation: NavController,
+    authManager: AuthenticationManager
+) {
     analytics.logScreenView(screenName = Routes.Home.name)
 
     val context = LocalContext.current
@@ -83,7 +84,7 @@ fun HomeScreen(analytics: AnalyticsManager, navigation: NavController, authManag
         }
     }
 
-    Scaffold (
+    Scaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -115,7 +116,9 @@ fun HomeScreen(analytics: AnalyticsManager, navigation: NavController, authManag
                         Spacer(modifier = Modifier.width(10.dp))
                         Column {
                             Text(
-                                text = if (!user?.displayName.isNullOrBlank()) { "Hola ${user?.displayName}" } else "Bienvenidx",
+                                text = if (!user?.displayName.isNullOrBlank()) {
+                                    "Hola ${user?.displayName}"
+                                } else "Bienvenidx",
                                 fontSize = 20.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
@@ -124,7 +127,8 @@ fun HomeScreen(analytics: AnalyticsManager, navigation: NavController, authManag
                                 text = user?.email ?: "Anónimo",
                                 fontSize = 12.sp,
                                 maxLines = 1,
-                                overflow = TextOverflow.Ellipsis)
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
                     }
                 },
@@ -143,7 +147,7 @@ fun HomeScreen(analytics: AnalyticsManager, navigation: NavController, authManag
         bottomBar = {
             BottomBar(navController = navController)
         }
-    ){ contentPadding ->
+    ) { contentPadding ->
         Box(modifier = Modifier.padding(contentPadding)) {
             if (showDialog) {
                 LogoutDialog(onConfirmLogout = {
@@ -225,21 +229,13 @@ fun RowScope.AddItem(screens: BottomNavScreen, currentDestination: NavDestinatio
 @Composable
 fun NavGraph(navController: NavHostController, context: Context, authManager: AuthenticationManager) {
     val realtimeManager = RealtimeManager(context)
-    val firestoreManager = FirestoreManager(context)
-
-    val notes: List<Note> by firestoreManager.getAllNotes().collectAsState(emptyList())
 
     NavHost(navController = navController, startDestination = BottomNavScreen.Contact.route) {
         composable(route = BottomNavScreen.Contact.route) {
             ContactsScreen(realtimeManager, authManager)
         }
         composable(route = BottomNavScreen.Note.route) {
-            NotesScreen(
-                notes,
-                firestoreManager::addNote,
-                firestoreManager::updateNote,
-                firestoreManager::deleteNote,
-            )
+            NotesScreen()
         }
     }
 }
@@ -250,6 +246,7 @@ sealed class BottomNavScreen(val route: String, val title: String, val icon: Ima
         title = "Contactos",
         icon = Icons.Default.Person
     )
+
     data object Note : BottomNavScreen(
         route = "notes",
         title = "Notas",

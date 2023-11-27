@@ -32,9 +32,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.camihruiz24.android_firebase_app.utils.AnalyticsManager
-import com.camihruiz24.android_firebase_app.utils.AuthorizationResult
-import com.camihruiz24.android_firebase_app.utils.AuthenticationManager
+import com.camihruiz24.android_firebase_app.data.AnalyticsManager
+import com.camihruiz24.android_firebase_app.data.AuthorizationResult
+import com.camihruiz24.android_firebase_app.data.AuthenticationManager
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -80,7 +80,7 @@ fun ForgotPasswordScreen(analytics: AnalyticsManager, authManager: Authenticatio
     }
 }
 
-suspend fun resetPassword(email: String, authManager: AuthenticationManager, analytics: AnalyticsManager,  context: Context, navigation: NavController) {
+suspend fun resetPassword(email: String, authManager: AuthenticationManager, analytics: AnalyticsManager, context: Context, navigation: NavController) {
     when(val result = authManager.resetPassword(email)) {
         is AuthorizationResult.Success -> {
             analytics.logButtonClicked("Click: envío de reinicio de contraseña para $email")

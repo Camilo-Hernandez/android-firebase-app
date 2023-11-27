@@ -51,9 +51,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.camihruiz24.android_firebase_app.R
 import com.camihruiz24.android_firebase_app.ui.navigation.Routes
-import com.camihruiz24.android_firebase_app.utils.AnalyticsManager
-import com.camihruiz24.android_firebase_app.utils.AuthenticationManager
-import com.camihruiz24.android_firebase_app.utils.AuthorizationResult
+import com.camihruiz24.android_firebase_app.data.AnalyticsManager
+import com.camihruiz24.android_firebase_app.data.AuthenticationManager
+import com.camihruiz24.android_firebase_app.data.AuthorizationResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseUser

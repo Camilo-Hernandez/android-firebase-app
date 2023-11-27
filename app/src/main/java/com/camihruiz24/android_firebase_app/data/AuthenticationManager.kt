@@ -1,4 +1,4 @@
-package com.camihruiz24.android_firebase_app.utils
+package com.camihruiz24.android_firebase_app.data
 
 import android.content.Context
 import android.content.Intent
@@ -17,7 +17,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
+import javax.inject.Singleton
 import javax.security.auth.login.LoginException
 
 sealed interface AuthorizationResult<out T> {
@@ -25,7 +28,8 @@ sealed interface AuthorizationResult<out T> {
     data class Error(val errorMessage: String) : AuthorizationResult<Nothing>
 }
 
-class AuthenticationManager(private val context: Context) {
+@Singleton
+class AuthenticationManager @Inject constructor(@ApplicationContext private val context: Context) {
     private val auth: FirebaseAuth by lazy { Firebase.auth }
 
     // Se debe obtener la instacia del cliente de google autenticado para cerrar sesión de la cuenta de Google, además
@@ -36,7 +40,9 @@ class AuthenticationManager(private val context: Context) {
     suspend fun signInAnonymously(): AuthorizationResult<FirebaseUser> =
         try {
             auth.signInAnonymously().await().let { result ->
-                AuthorizationResult.Success(result.user ?: throw LoginException(context.getString(R.string.login_error)))
+                AuthorizationResult.Success(
+                    result.user ?: throw LoginException(context.getString(R.string.login_error))
+                )
             }
         } catch (e: LoginException) {
             AuthorizationResult.Error(e.message ?: context.getString(R.string.login_error))

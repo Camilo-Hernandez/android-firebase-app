@@ -54,8 +54,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.camihruiz24.android_firebase_app.model.Contact
-import com.camihruiz24.android_firebase_app.utils.AuthenticationManager
-import com.camihruiz24.android_firebase_app.utils.RealtimeManager
+import com.camihruiz24.android_firebase_app.data.AuthenticationManager
+import com.camihruiz24.android_firebase_app.data.contacts.RealtimeManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

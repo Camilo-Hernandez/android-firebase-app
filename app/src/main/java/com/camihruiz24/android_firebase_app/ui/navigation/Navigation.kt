@@ -10,15 +10,15 @@ import com.camihruiz24.android_firebase_app.ui.screens.Screen
 import com.camihruiz24.android_firebase_app.ui.screens.auth.ForgotPasswordScreen
 import com.camihruiz24.android_firebase_app.ui.screens.auth.SignUpScreen
 import com.camihruiz24.android_firebase_app.ui.screens.home.HomeScreen
-import com.camihruiz24.android_firebase_app.utils.AnalyticsManager
-import com.camihruiz24.android_firebase_app.utils.AuthenticationManager
+import com.camihruiz24.android_firebase_app.data.AnalyticsManager
+import com.camihruiz24.android_firebase_app.data.AuthenticationManager
 import com.google.firebase.auth.FirebaseUser
 import io.devexpert.android_firebase.ui.screens.auth.LoginScreen
 
 @Composable
 fun Navigation(context: Context, navController: NavHostController = rememberNavController()) {
-    val analytics: AnalyticsManager = AnalyticsManager(context)
-    val authManager: AuthenticationManager = AuthenticationManager(context)
+    val analytics = AnalyticsManager(context)
+    val authManager = AuthenticationManager(context)
     val user: FirebaseUser? = authManager.getCurrentUser()
 
     Screen {
