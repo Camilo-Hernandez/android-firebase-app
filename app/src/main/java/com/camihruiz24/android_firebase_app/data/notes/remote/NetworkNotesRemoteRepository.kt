@@ -9,6 +9,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.MetadataChanges
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.dataObjects
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
@@ -19,7 +21,7 @@ const val NOTES = "notes"
 class NetworkNotesRemoteRepository @Inject constructor(
     @ApplicationContext context: Context
 ) {
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val firestore: FirebaseFirestore = Firebase.firestore
 
     private val authManager: AuthenticationManager = AuthenticationManager(context)
     private var userId: String? = authManager.getCurrentUser()?.uid

@@ -2,7 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:allowBackup="true"
@@ -25,6 +30,27 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Providers offer a way to share files between applications
+         We define a provider with the objective of indicating that the resources saved by the app can be seen by other apps
+         Authorities define who are the authorities of file creation and file access (the app provider)
+         Name indicates which class name manages the file provider (FileProvider from the content library)
+         Exported indicates whether or not the provider can be used by other apps (false)
+         GrantUriPermissions indicates whether or not other apps have access permission to the Uri created by the provider (true)
+         Metadata: name for the paths support, resource for the xml file paths
+         -->
+
+        <provider
+            android:authorities="com.camihruiz24.android_firebase_app.provider"
+            android:name="androidx.core.content.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths"
+                />
+        </provider>
     </application>
 
 </manifest>
