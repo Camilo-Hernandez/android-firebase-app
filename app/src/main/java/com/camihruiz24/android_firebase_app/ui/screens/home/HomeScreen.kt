@@ -2,6 +2,7 @@ package com.camihruiz24.android_firebase_app.ui.screens.home
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -56,15 +57,28 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.camihruiz24.android_firebase_app.R
-import com.camihruiz24.android_firebase_app.ui.navigation.Routes
 import com.camihruiz24.android_firebase_app.data.AnalyticsManager
 import com.camihruiz24.android_firebase_app.data.AuthenticationManager
 import com.camihruiz24.android_firebase_app.data.CloudStorageManager
 import com.camihruiz24.android_firebase_app.data.contacts.RealtimeManager
+import com.camihruiz24.android_firebase_app.ui.navigation.Routes
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.crashlytics.setCustomKeys
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.ConfigUpdate
+import com.google.firebase.remoteconfig.ConfigUpdateListener
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigException
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
+import com.google.firebase.remoteconfig.get
+import com.google.firebase.remoteconfig.ktx.remoteConfig
+
+private lateinit var firebaseRemoteConfig: FirebaseRemoteConfig
+private var welcomeMessage by mutableStateOf("Bienvenidx")
+private var isButtonVisible by mutableStateOf(true)
+const val IS_BUTTON_VISIBLE = "is_button_visible"
+const val WELCOME_MESSAGE = "welcome_message"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,6 +88,8 @@ fun HomeScreen(
     authManager: AuthenticationManager
 ) {
     analytics.logScreenView(screenName = Routes.Home.name)
+
+    initRemoteConfig()
 
     val context = LocalContext.current
 
@@ -124,7 +140,7 @@ fun HomeScreen(
                             Text(
                                 text = if (!user?.displayName.isNullOrBlank()) {
                                     "Hola ${user?.displayName}"
-                                } else "Bienvenidx",
+                                } else welcomeMessage,
                                 fontSize = 20.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
@@ -140,24 +156,26 @@ fun HomeScreen(
                 },
                 colors = TopAppBarDefaults.smallTopAppBarColors(),
                 actions = {
-                    IconButton(
-                        onClick = {
-                            val crashlytics = Firebase.crashlytics
-                            crashlytics.setCustomKey("Login Screen", "Botón Forzar detención")
-                            crashlytics.log("Botón Forzar detención")
-                            crashlytics.setCustomKeys {
-                                key("string", "botón warning")
-                                key("long", 50L)
-                                key("boolean", true)
-                                key("integer", 10)
-                                key("float", 5.6F)
-                                key("double", 5.6)
+                    if (isButtonVisible) {
+                        IconButton(
+                            onClick = {
+                                val crashlytics = Firebase.crashlytics
+                                crashlytics.setCustomKey("Login Screen", "Botón Forzar detención")
+                                crashlytics.log("Botón Forzar detención")
+                                crashlytics.setCustomKeys {
+                                    key("string", "botón warning")
+                                    key("long", 50L)
+                                    key("boolean", true)
+                                    key("integer", 10)
+                                    key("float", 5.6F)
+                                    key("double", 5.6)
+                                }
+                                crashlytics.setUserId(user?.uid ?: throw RuntimeException("No user id"))
+                                throw RuntimeException("Error forzado desde LoginScreen")
                             }
-                            crashlytics.setUserId(user?.uid ?: throw RuntimeException("No user id"))
-                            throw RuntimeException("Error forzado desde LoginScreen")
+                        ) {
+                            Icon(Icons.Default.Warning, contentDescription = "Forzar Error")
                         }
-                    ) {
-                        Icon(Icons.Default.Warning , contentDescription = "Forzar Error")
                     }
                     IconButton(
                         onClick = {
@@ -187,6 +205,51 @@ fun HomeScreen(
                 authManager = authManager,
             )
         }
+    }
+}
+
+fun initRemoteConfig() {
+    firebaseRemoteConfig = Firebase.remoteConfig
+    FirebaseRemoteConfigSettings.Builder()
+        .setMinimumFetchIntervalInSeconds(3_600)
+        .build().also { configSettings ->
+            // Add config settings
+            firebaseRemoteConfig.setConfigSettingsAsync(configSettings)
+        }
+    // Add default values to the remote configuration
+    firebaseRemoteConfig.setDefaultsAsync(R.xml.remote_config_defaults)
+    // Add a listener to the remote changes
+    firebaseRemoteConfig.addOnConfigUpdateListener(object : ConfigUpdateListener {
+        private val TAG = "Home Screen"
+        override fun onUpdate(configUpdate: ConfigUpdate) {
+            Log.d(TAG, "Updated Keys: ${configUpdate.updatedKeys}")
+            if (configUpdate.updatedKeys.contains(IS_BUTTON_VISIBLE) ||
+                configUpdate.updatedKeys.contains(WELCOME_MESSAGE)
+            ) {
+                // When the activation is completed, display a welcome message
+                firebaseRemoteConfig.activate().addOnCompleteListener {
+                    displayWelcomeMessage()
+                }
+            }
+        }
+
+        private fun displayWelcomeMessage() {
+            welcomeMessage = firebaseRemoteConfig[WELCOME_MESSAGE].asString()
+            isButtonVisible = firebaseRemoteConfig[IS_BUTTON_VISIBLE].asBoolean()
+        }
+
+        override fun onError(error: FirebaseRemoteConfigException) {
+            Log.d(TAG, "onError: ${error.localizedMessage}")
+        }
+    })
+    fetchWelcome()
+}
+
+fun fetchWelcome() {
+    firebaseRemoteConfig.fetchAndActivate().addOnCompleteListener { task ->
+        if (task.isSuccessful) println("Parámetros actualizados: ${task.result}")
+        else println("Fetch failed")
+
     }
 }
 
