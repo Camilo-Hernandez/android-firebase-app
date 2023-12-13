@@ -50,14 +50,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.camihruiz24.android_firebase_app.R
-import com.camihruiz24.android_firebase_app.ui.navigation.Routes
 import com.camihruiz24.android_firebase_app.data.AnalyticsManager
 import com.camihruiz24.android_firebase_app.data.AuthenticationManager
 import com.camihruiz24.android_firebase_app.data.AuthorizationResult
+import com.camihruiz24.android_firebase_app.ui.navigation.Routes
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -225,6 +227,22 @@ fun LoginScreen(
             text = "Continuar con Google",
             icon = R.drawable.ic_google,
             color = Color(0xFFF1F1F1)
+        )
+        Spacer(modifier = Modifier.height(25.dp))
+        ClickableText(
+            text = AnnotatedString("Forzar cierre Crashlytics"),
+            onClick = {
+                val crashlytics = Firebase.crashlytics
+                crashlytics.setCustomKey("Login Screen", "Botón Forzar detención")
+                crashlytics.log("Botón Forzar detención")
+                throw RuntimeException("Error forzado desde LoginScreen")
+            },
+            style = TextStyle(
+                fontSize = 14.sp,
+                fontFamily = FontFamily.Default,
+                textDecoration = TextDecoration.Underline,
+                color = MaterialTheme.colorScheme.primary
+            )
         )
     }
 }

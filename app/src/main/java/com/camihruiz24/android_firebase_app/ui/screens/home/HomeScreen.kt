@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.outlined.ExitToApp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -61,6 +62,9 @@ import com.camihruiz24.android_firebase_app.data.AuthenticationManager
 import com.camihruiz24.android_firebase_app.data.CloudStorageManager
 import com.camihruiz24.android_firebase_app.data.contacts.RealtimeManager
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.crashlytics.ktx.crashlytics
+import com.google.firebase.crashlytics.setCustomKeys
+import com.google.firebase.ktx.Firebase
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -136,6 +140,25 @@ fun HomeScreen(
                 },
                 colors = TopAppBarDefaults.smallTopAppBarColors(),
                 actions = {
+                    IconButton(
+                        onClick = {
+                            val crashlytics = Firebase.crashlytics
+                            crashlytics.setCustomKey("Login Screen", "Botón Forzar detención")
+                            crashlytics.log("Botón Forzar detención")
+                            crashlytics.setCustomKeys {
+                                key("string", "botón warning")
+                                key("long", 50L)
+                                key("boolean", true)
+                                key("integer", 10)
+                                key("float", 5.6F)
+                                key("double", 5.6)
+                            }
+                            crashlytics.setUserId(user?.uid ?: throw RuntimeException("No user id"))
+                            throw RuntimeException("Error forzado desde LoginScreen")
+                        }
+                    ) {
+                        Icon(Icons.Default.Warning , contentDescription = "Forzar Error")
+                    }
                     IconButton(
                         onClick = {
                             showDialog = true
