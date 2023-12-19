@@ -1,6 +1,6 @@
 # Android Firebase App
 
-- [Android Project with Firebase](#-android-project-with-firebase)
+- [Android Project with Firebase](#android-project-with-firebase)
 - [Proyecto Android con Firebase](#Proyecto-Android-con-Firebase)
 
 # Android Project with Firebase
